@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useEffect, useRef, ReactNode } from 'react';
+import React, { createContext, useState, useContext, useEffect, useRef, ReactNode, useCallback } from 'react';
 
 // Define the available sound keys for strict typing
 export type SoundType = 
@@ -20,7 +20,6 @@ export type SoundType =
 interface SoundContextType {
     playSound: (type: SoundType, volume?: number) => void;
     isMuted: boolean;
-    toggleMute: () => void;
     setMuted: (muted: boolean) => void;
 }
 
@@ -57,49 +56,17 @@ export const SoundProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         }
     });
 
-    // Audio cache to prevent re-fetching
     const audioCache = useRef<Partial<Record<SoundType, HTMLAudioElement>>>({});
 
-    // Persist mute state
     useEffect(() => {
         try {
             localStorage.setItem('zap_muted', JSON.stringify(isMuted));
         } catch (e) {
-            // ignore localstorage errors
+            // ignore
         }
     }, [isMuted]);
 
-    // ONE-TIME AUDIO UNLOCKER
-    useEffect(() => {
-        const unlockAudio = () => {
-            const silent = new Audio("data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA");
-            silent.play().catch((e) => {});
-
-            ['click_primary', 'success', 'error'].forEach(type => {
-                if (!audioCache.current[type as SoundType]) {
-                    const audio = new Audio(SOUND_MANIFEST[type as SoundType]);
-                    audio.preload = 'auto';
-                    audioCache.current[type as SoundType] = audio;
-                }
-            });
-
-            document.removeEventListener('click', unlockAudio);
-            document.removeEventListener('keydown', unlockAudio);
-            document.removeEventListener('touchstart', unlockAudio);
-        };
-
-        document.addEventListener('click', unlockAudio);
-        document.addEventListener('keydown', unlockAudio);
-        document.addEventListener('touchstart', unlockAudio);
-
-        return () => {
-            document.removeEventListener('click', unlockAudio);
-            document.removeEventListener('keydown', unlockAudio);
-            document.removeEventListener('touchstart', unlockAudio);
-        };
-    }, []);
-
-    const playSound = (type: SoundType, volume: number = 0.5) => {
+    const playSound = useCallback((type: SoundType, volume: number = 0.5) => {
         if (isMuted) return;
 
         try {
@@ -112,33 +79,23 @@ export const SoundProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
             const audioClone = baseAudio.cloneNode() as HTMLAudioElement;
             audioClone.volume = Math.min(Math.max(volume, 0), 1);
-
-            const playPromise = audioClone.play();
-            if (playPromise !== undefined) {
-                playPromise.catch(error => {
-                    if (error.name === 'NotAllowedError') {
-                        console.warn("ZAP AUDIO: Playback blocked by browser. Interaction required.");
-                    } else {
-                        console.warn("ZAP AUDIO: Playback failed.", error);
-                    }
-                });
-            }
+            audioClone.play().catch(error => {
+                console.warn(`ZAP AUDIO: Playback failed for ${type}.`, error);
+            });
         } catch (e) {
             console.error("ZAP AUDIO CRITICAL FAILURE:", e);
         }
-    };
+    }, [isMuted]);
 
-    const toggleMute = () => setIsMuted(prev => !prev);
     const setMuted = (muted: boolean) => setIsMuted(muted);
 
     return (
-        <SoundContext.Provider value={{ playSound, isMuted, toggleMute, setMuted }}>
+        <SoundContext.Provider value={{ playSound, isMuted, setMuted }}>
             {children}
         </SoundContext.Provider>
     );
 };
 
-// Custom hook for easy consumption
 export const useSound = () => {
     const context = useContext(SoundContext);
     if (context === undefined) {

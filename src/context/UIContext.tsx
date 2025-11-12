@@ -1,4 +1,5 @@
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import React, { createContext, useState, useContext, ReactNode, useCallback } from 'react';
+import { useSound } from './SoundContext';
 
 interface UIContextType {
   isAuthModalOpen: boolean;
@@ -16,30 +17,41 @@ interface UIContextType {
 const UIContext = createContext<UIContextType | undefined>(undefined);
 
 export const UIProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const { playSound } = useSound();
+  
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalTab, setAuthModalTab] = useState<'login' | 'register'>('login');
   
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [reviewCasinoId, setReviewCasinoId] = useState<string | null>(null);
 
-  const openLogin = () => {
+  const openLogin = useCallback(() => {
+    playSound('ui_open');
     setAuthModalTab('login');
     setIsAuthModalOpen(true);
-  };
+  }, [playSound]);
 
-  const openRegister = () => {
+  const openRegister = useCallback(() => {
+    playSound('ui_open');
     setAuthModalTab('register');
     setIsAuthModalOpen(true);
-  };
+  }, [playSound]);
 
-  const closeAuthModal = () => setIsAuthModalOpen(false);
+  const closeAuthModal = useCallback(() => {
+    playSound('ui_close');
+    setIsAuthModalOpen(false);
+  }, [playSound]);
   
-  const openReviewModal = (casinoId?: string) => {
-      setReviewCasinoId(casinoId || null);
-      setIsReviewModalOpen(true);
-  };
+  const openReviewModal = useCallback((casinoId?: string) => {
+    playSound('ui_open');
+    setReviewCasinoId(casinoId || null);
+    setIsReviewModalOpen(true);
+  }, [playSound]);
   
-  const closeReviewModal = () => setIsReviewModalOpen(false);
+  const closeReviewModal = useCallback(() => {
+    playSound('ui_close');
+    setIsReviewModalOpen(false);
+  }, [playSound]);
 
   return (
     <UIContext.Provider value={{ 

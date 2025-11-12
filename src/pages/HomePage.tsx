@@ -11,7 +11,7 @@ import { useUI } from '../context/UIContext';
 
 export const HomePage: React.FC = () => {
   const { user } = useAuth();
-  const { openLogin, openRegister } = useUI();
+  const { openRegister } = useUI();
   
   React.useEffect(() => {
       window.scrollTo(0, 0);

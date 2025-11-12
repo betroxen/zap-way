@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { Button } from '../common/Button';
 import { Icons } from '../common/icons';
 import { ZapLogo } from '../ui/ZapLogo';
@@ -16,6 +16,7 @@ export const Header: React.FC<HeaderProps> = ({ isSidebarCollapsed, onToggleMobi
   const { user, logout } = useAuth();
   const { openLogin, openRegister, openReviewModal } = useUI();
   const { isMuted, setMuted, playSound } = useSound();
+  const navigate = useNavigate();
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
 
   const handleMuteToggle = () => {
@@ -25,6 +26,12 @@ export const Header: React.FC<HeaderProps> = ({ isSidebarCollapsed, onToggleMobi
           setTimeout(() => playSound('ui_open', 0.4), 50);
       }
   };
+
+  const handleLogout = () => {
+    logout();
+    setIsProfileDropdownOpen(false);
+    navigate('/');
+  }
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 flex h-16 w-full items-center justify-between border-b border-[#333333] bg-[#0c0c0e]/90 backdrop-blur-xl px-4 py-3 md:px-6 transition-all duration-300 shadow-[0_4px_30px_rgba(0,0,0,0.5)]`}>
@@ -105,7 +112,7 @@ export const Header: React.FC<HeaderProps> = ({ isSidebarCollapsed, onToggleMobi
                             </NavLink>
                         </div>
                         <div className="border-t border-[#333333] p-1">
-                             <button onClick={() => { logout(); setIsProfileDropdownOpen(false); }} className="flex w-full items-center gap-3 px-3 py-2 text-xs text-red-400 hover:bg-red-950/20 hover:text-red-300 transition-colors font-heading uppercase rounded-md" role="menuitem">
+                             <button onClick={handleLogout} className="flex w-full items-center gap-3 px-3 py-2 text-xs text-red-400 hover:bg-red-950/20 hover:text-red-300 transition-colors font-heading uppercase rounded-md" role="menuitem">
                                 <Icons.LogOut className="h-4 w-4" aria-hidden="true" /> Terminate Session
                             </button>
                         </div>

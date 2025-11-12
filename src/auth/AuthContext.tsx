@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { authService } from './authService';
 import { User, RegisterData } from './types';
 
@@ -13,17 +13,23 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   // Refresh on mount to check for existing session
   useEffect(() => {
-    authService
-      .refresh()
-      .then(setUser)
-      .catch(() => setUser(null))
-      .finally(() => setLoading(false));
+    const checkSession = async () => {
+        try {
+            const currentUser = await authService.refresh();
+            setUser(currentUser);
+        } catch (error) {
+            setUser(null);
+        } finally {
+            setLoading(false);
+        }
+    };
+    checkSession();
   }, []);
 
   const login = async (email: string, password: string) => {
@@ -36,8 +42,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(u);
   };
 
-  const logout = () => {
-    authService.logout();
+  const logout = async () => {
+    await authService.logout();
     setUser(null);
   };
 

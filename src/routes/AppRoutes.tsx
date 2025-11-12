@@ -1,8 +1,6 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { MainLayout } from '../layouts/MainLayout';
-
-// Pages
 import { HomePage } from '../pages/HomePage';
 import { DashboardPage } from '../pages/DashboardPage';
 import { CasinoDirectoryPage } from '../pages/CasinoDirectoryPage';
@@ -41,23 +39,30 @@ import { useAuth } from '../auth/AuthContext';
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { user, loading } = useAuth();
     if (loading) return null; // Or a loading spinner
-    return user ? <>{children}</> : <HomePage />;
+    return user ? <>{children}</> : <Navigate to="/" replace />;
 };
 
 
 export const AppRoutes: React.FC = () => (
   <Routes>
     <Route element={<MainLayout />}>
+        {/* Public Routes */}
         <Route path="/" element={<HomePage />} />
-        <Route path="/about-us" element={<AboutUsPage />} />
-        <Route path="/affiliate" element={<AffiliatePage />} />
-        <Route path="/terms-of-service" element={<TermsOfServicePage />} />
-        <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
-        <Route path="/commercial-disclosure" element={<CommercialDisclosurePage />} />
-        <Route path="/partner-vetting" element={<PartnerVettingPage />} />
-        <Route path="/review-methodology" element={<ReviewMethodologyPage />} />
-        <Route path="/provably-fair" element={<ProvablyFairPage />} />
-        <Route path="/responsible-gaming" element={<ResponsibleGamingPage />} />
+        
+        {/* Static/Info pages */}
+        <Route path="/about-us" element={<ProtectedRoute><AboutUsPage /></ProtectedRoute>} />
+        <Route path="/affiliate" element={<ProtectedRoute><AffiliatePage /></ProtectedRoute>} />
+        <Route path="/terms-of-service" element={<ProtectedRoute><TermsOfServicePage /></ProtectedRoute>} />
+        <Route path="/privacy-policy" element={<ProtectedRoute><PrivacyPolicyPage /></ProtectedRoute>} />
+        <Route path="/commercial-disclosure" element={<ProtectedRoute><CommercialDisclosurePage /></ProtectedRoute>} />
+        <Route path="/partner-vetting" element={<ProtectedRoute><PartnerVettingPage /></ProtectedRoute>} />
+        <Route path="/review-methodology" element={<ProtectedRoute><ReviewMethodologyPage /></ProtectedRoute>} />
+        <Route path="/provably-fair" element={<ProtectedRoute><ProvablyFairPage /></ProtectedRoute>} />
+        <Route path="/responsible-gaming" element={<ProtectedRoute><ResponsibleGamingPage /></ProtectedRoute>} />
+        <Route path="/faq" element={<ProtectedRoute><FAQPage /></ProtectedRoute>} />
+        <Route path="/support" element={<ProtectedRoute><SupportPage /></ProtectedRoute>} />
+        <Route path="/knowledge-base" element={<ProtectedRoute><KnowledgeBasePage /></ProtectedRoute>} />
+
 
         {/* Protected Routes */}
         <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
@@ -66,8 +71,6 @@ export const AppRoutes: React.FC = () => (
         <Route path="/bonus-offers" element={<ProtectedRoute><BonusOffersPage /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
         <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
-        <Route path="/support" element={<ProtectedRoute><SupportPage /></ProtectedRoute>} />
-        <Route path="/faq" element={<ProtectedRoute><FAQPage /></ProtectedRoute>} />
         <Route path="/bonus-calculator" element={<ProtectedRoute><BonusCalculatorPage /></ProtectedRoute>} />
         <Route path="/rtp-tracker" element={<ProtectedRoute><LiveRTPTrackerPage /></ProtectedRoute>} />
         <Route path="/missions" element={<ProtectedRoute><MissionsPage /></ProtectedRoute>} />
@@ -79,12 +82,11 @@ export const AppRoutes: React.FC = () => (
         <Route path="/reports" element={<ProtectedRoute><ReportsPage /></ProtectedRoute>} />
         <Route path="/rewards" element={<ProtectedRoute><RewardsPage /></ProtectedRoute>} />
         <Route path="/live-support" element={<ProtectedRoute><LiveSupportPage /></ProtectedRoute>} />
-        <Route path="/knowledge-base" element={<ProtectedRoute><KnowledgeBasePage /></ProtectedRoute>} />
         <Route path="/strategy-sandbox" element={<ProtectedRoute><StrategySandboxPage /></ProtectedRoute>} />
         <Route path="/strategy-sandbox/mines" element={<ProtectedRoute><MinesGamePage /></ProtectedRoute>} />
         <Route path="/strategy-sandbox/plinko" element={<ProtectedRoute><PlinkoGamePage /></ProtectedRoute>} />
         
-        <Route path="*" element={<div>Page not found</div>} />
+        <Route path="*" element={<Navigate to="/" replace />} />
     </Route>
   </Routes>
 );

@@ -1,5 +1,5 @@
 import React, { createContext, useState, useCallback, ReactNode, useContext } from 'react';
-import { Icons } from '../components/icons';
+import { Icons } from '../components/common/icons';
 import { useSound } from './SoundContext';
 
 type ToastType = 'success' | 'error' | 'info';
@@ -65,7 +65,6 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   );
 };
 
-// FIX: Add useToast custom hook for consistency and to resolve export error.
 export const useToast = () => {
     const context = useContext(ToastContext);
     if (context === undefined) {

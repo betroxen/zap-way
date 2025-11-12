@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { Icons } from '../common/icons';
 import { sidebarNavItems } from '../../constants/sidebar';
@@ -38,7 +38,6 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen }) => {
     const { user } = useAuth();
-    const location = useLocation();
     
     const handleNavClick = () => {
         setIsMobileOpen(false);
@@ -75,7 +74,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setIsCollapsed, i
 
     return (
     <>
-      <div className={`fixed inset-0 top-16 z-[80] bg-black/60 backdrop-blur-sm md:hidden transition-opacity duration-300 ${isMobileOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`} onClick={() => setIsMobileOpen(false)} aria-hidden="true" />
+      <div className={`fixed inset-0 top-16 z-[80] bg-black/60 backdrop-blur-sm md:hidden transition-opacity duration-300 ease-in-out ${isMobileOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`} onClick={() => setIsMobileOpen(false)} aria-hidden="true" />
       <div className={`fixed left-0 top-16 bottom-0 z-[90] w-[85vw] max-w-[300px] md:hidden transform transition-transform duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'}`}>
          <div className="h-full flex flex-col bg-[#0c0c0e] border-r border-[#333] shadow-2xl">
              <div className="shrink-0">
@@ -109,7 +108,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setIsCollapsed, i
         <div className="flex-1 overflow-y-auto custom-scrollbar py-6">
             {!isCollapsed ? (
                 <div className="px-4 mb-6">
-                    <Input placeholder="SEARCH INTEL..." className="pl-9 bg-[#1A1A1A] border-[#333] text-xs font-mono h-9 focus:border-[#00FFC0]" />
+                     <div className="relative group">
+                        <Icons.Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8d8c9e] h-4 w-4 group-focus-within:text-[#00FFC0] transition-colors" />
+                        <Input placeholder="SEARCH INTEL..." className="pl-9 bg-[#1A1A1A] border-[#333] text-xs font-mono h-9 focus:border-[#00FFC0] transition-all" />
+                    </div>
                 </div>
             ) : (
                 <div className="flex justify-center mb-6">
@@ -135,8 +137,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setIsCollapsed, i
             </nav>
         </div>
         <div className={`shrink-0 border-t border-[#333] bg-[#0c0c0e] p-4 flex ${isCollapsed ? 'justify-center' : 'justify-between'} items-center`}>
-             <Button variant="ghost" size="sm" className={`text-[#8d8c9e] hover:text-white border border-transparent hover:border-[#333] ${isCollapsed ? 'px-0 w-10 h-10' : 'w-full'}`} onClick={() => setIsCollapsed(!isCollapsed)} title={isCollapsed ? "Expand" : "Collapse"}>
-                {isCollapsed ? <Icons.ChevronRight className="h-5 w-5" /> : <><Icons.ChevronLeft className="h-5 w-5" /><span>COLLAPSE</span></>}
+             <Button variant="ghost" size="sm" className={`text-[#8d8c9e] hover:text-white border border-transparent hover:border-[#333] transition-all ${isCollapsed ? 'px-0 w-10 h-10 flex items-center justify-center' : 'w-full flex items-center justify-center gap-2'}`} onClick={() => setIsCollapsed(!isCollapsed)} title={isCollapsed ? "Expand" : "Collapse"}>
+                {isCollapsed ? <Icons.ChevronRight className="h-5 w-5" /> : <><Icons.ChevronLeft className="h-5 w-5" /><span className="font-heading uppercase text-xs tracking-wider">COLLAPSE</span></>}
             </Button>
         </div>
       </aside>

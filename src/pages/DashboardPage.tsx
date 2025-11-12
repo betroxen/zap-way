@@ -6,9 +6,17 @@ import { ProgressBar } from '../components/common/ProgressBar';
 import { Icons } from '../components/common/icons';
 import { Toggle } from '../components/common/Toggle';
 
-// Mock Data removed
-const ALPHA_FEED: any[] = [];
-const ACTIVE_MISSIONS: any[] = [];
+const ALPHA_FEED = [
+    { id: 1, type: 'PRIORITY', text: 'VPR VALIDATED: Stake.com withdrawal delay confirmed. Score impacted.', time: '2m ago' },
+    { id: 2, type: 'STANDARD', text: 'New Mission Available: "RTP Hunter" (50 ZP)', time: '15m ago' },
+    { id: 3, type: 'STANDARD', text: 'Community Veto initiated against "ShadyBet".', time: '1h ago' },
+    { id: 4, type: 'SYSTEM', text: 'SSP Reward Pool adjusted: +2.4% APY.', time: '3h ago' },
+];
+
+const ACTIVE_MISSIONS = [
+    { id: 1, title: "VALIDATE A PAYOUT", reward: "50 ZP", progress: 0, status: "ACTIVE", description: "Submit one VPR for a withdrawal > $100." },
+    { id: 2, title: "WEEKLY WAGER CHALLENGE", reward: "25 ZP", progress: 60, status: "ACTIVE", description: "Wager $500 on verified >96% RTP slots." },
+];
 
 export const DashboardPage = () => {
     const navigate = useNavigate();
@@ -75,7 +83,9 @@ export const DashboardPage = () => {
             </div>
 
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+                
                 <div className="xl:col-span-2 space-y-8">
+                    
                     <div>
                         <div className="flex justify-between items-center mb-4">
                              <h2 className="font-heading text-xl text-white uppercase flex items-center gap-2">
@@ -83,20 +93,28 @@ export const DashboardPage = () => {
                             </h2>
                             <Button variant="link" onClick={() => navigate('/missions')} className="text-xs font-mono">VIEW ALL →</Button>
                         </div>
-                        {ACTIVE_MISSIONS.length > 0 ? (
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {ACTIVE_MISSIONS.map(mission => (
-                                    <Card key={mission.id} className="p-5 flex flex-col justify-between bg-[#14131c] hover:bg-[#1A1A1A] border-[#333] group">
-                                        {/* Mission content */}
-                                    </Card>
-                                ))}
-                            </div>
-                        ) : (
-                             <Card className="p-8 text-center text-[#8d8c9e] border-dashed border-[#333] bg-transparent">
-                                <Icons.Target className="h-8 w-8 mx-auto mb-2 opacity-50"/>
-                                <p className="font-mono text-sm">NO ACTIVE MISSIONS</p>
-                            </Card>
-                        )}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {ACTIVE_MISSIONS.map(mission => (
+                                <Card key={mission.id} className="p-5 flex flex-col justify-between bg-[#14131c] hover:bg-[#1A1A1A] border-[#333] group">
+                                    <div>
+                                        <div className="flex justify-between items-start mb-3">
+                                            <h3 className="font-heading text-white text-sm uppercase">{mission.title}</h3>
+                                            <span className="font-mono text-[#00FFC0] text-xs bg-[#00FFC0]/10 px-2 py-1 rounded border border-[#00FFC0]/20">
+                                                +{mission.reward}
+                                            </span>
+                                        </div>
+                                        <p className="text-[#8d8c9e] text-sm mb-4 leading-relaxed">{mission.description}</p>
+                                    </div>
+                                    <div>
+                                        <div className="flex justify-between text-xs font-mono text-[#8d8c9e] mb-1">
+                                            <span>PROGRESS</span>
+                                            <span className={mission.progress > 0 ? "text-[#00FFC0]" : ""}>{mission.progress}%</span>
+                                        </div>
+                                        <ProgressBar progress={mission.progress} className="h-1" />
+                                    </div>
+                                </Card>
+                            ))}
+                        </div>
                     </div>
 
                     <Card className="p-0 overflow-hidden bg-[#0c0c0e] border-[#333]">
@@ -113,33 +131,65 @@ export const DashboardPage = () => {
                             </div>
                         </div>
                         <div className="max-h-[300px] overflow-y-auto custom-scrollbar p-4 space-y-3">
-                            {ALPHA_FEED.length > 0 ? ALPHA_FEED.map(item => (
-                                <div key={item.id} className={`p-3 rounded border text-sm flex gap-3 items-start animate-fadeIn`}>
-                                    {/* Feed item content */}
+                            {ALPHA_FEED.map(item => (
+                                <div 
+                                    key={item.id} 
+                                    className={`p-3 rounded border text-sm flex gap-3 items-start animate-fadeIn
+                                        ${item.type === 'PRIORITY' 
+                                            ? 'bg-[#00FFC0]/5 border-[#00FFC0]/50 shadow-[0_0_10px_rgba(0,255,192,0.1)]' 
+                                            : 'bg-[#14131c] border-[#333]'}`}
+                                >
+                                    <div className={`mt-0.5 shrink-0 ${item.type === 'PRIORITY' ? 'text-[#00FFC0]' : 'text-[#8d8c9e]'}`}>
+                                        {item.type === 'PRIORITY' ? <Icons.AlertTriangle className="w-4 h-4" /> : 
+                                         item.type === 'SYSTEM' ? <Icons.Settings className="w-4 h-4" /> : 
+                                         <Icons.Info className="w-4 h-4" />}
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className={`${item.type === 'PRIORITY' ? 'text-white font-medium' : 'text-[#8d8c9e]'}`}>{item.text}</p>
+                                        <p className="text-xs font-mono text-[#666] mt-1 uppercase">{item.time} // {item.type}</p>
+                                    </div>
                                 </div>
-                            )) : (
-                                <div className="text-center py-10 text-[#8d8c9e]">
-                                    <Icons.Mail className="h-8 w-8 mx-auto mb-2 opacity-50"/>
-                                    <p className="font-mono text-sm">ALPHA FEED IS QUIET</p>
-                                </div>
-                            )}
+                            ))}
                         </div>
                     </Card>
+
                 </div>
 
                 <div className="space-y-8">
+                    
                     <div>
                         <h2 className="font-heading text-xl text-white uppercase mb-4 flex items-center gap-2">
                             <Icons.Shield className="h-5 w-5 text-[#00FFC0]" /> GRID RECON
                         </h2>
                         <Card className="p-5 bg-[#0c0c0e] border-[#00FFC0]/30 relative overflow-hidden group">
-                           <div className="text-center py-10 text-[#8d8c9e]">
-                                <Icons.Server className="h-8 w-8 mx-auto mb-2 opacity-50"/>
-                                <p className="font-mono text-sm">NO OPERATORS FOUND</p>
-                                <Button variant="link" size="sm" className="mt-2" onClick={() => navigate('/casinos')}>
-                                    BROWSE GRID
-                                </Button>
-                           </div>
+                            <div className="absolute top-0 right-0 bg-[#00FFC0] text-black text-[10px] font-bold px-3 py-1 rounded-bl-lg font-heading uppercase flex items-center gap-1 shadow-[0_0_15px_rgba(0,255,192,0.4)]">
+                                <Icons.Shield className="w-3 h-3" /> ZAP CERTIFIED
+                            </div>
+                            
+                            <div className="flex items-center gap-4 mb-6">
+                                <img src="https://files.catbox.moe/klt24q.jpg" alt="Stake" className="w-14 h-14 rounded-md border border-[#333]" />
+                                <div>
+                                    <h3 className="font-heading text-xl text-white uppercase">STAKE</h3>
+                                    <div className="flex text-[#00FFC0] text-xs gap-0.5">
+                                        <Icons.Star className="w-3.5 h-3.5 fill-[#00FFC0]" /><Icons.Star className="w-3.5 h-3.5 fill-[#00FFC0]" /><Icons.Star className="w-3.5 h-3.5 fill-[#00FFC0]" /><Icons.Star className="w-3.5 h-3.5 fill-[#00FFC0]" /><Icons.Star className="w-3.5 h-3.5 fill-[#00FFC0] opacity-50" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-3 mb-6">
+                                <div className="bg-[#14131c] p-3 rounded border border-[#333] text-center">
+                                    <p className="text-[10px] text-[#8d8c9e] font-heading uppercase mb-1">TRUE RTP (AVG)</p>
+                                    <p className="font-mono text-lg text-white font-bold">98.5%</p>
+                                </div>
+                                <div className="bg-[#14131c] p-3 rounded border border-[#333] text-center">
+                                    <p className="text-[10px] text-[#8d8c9e] font-heading uppercase mb-1">PAYOUT SPEED</p>
+                                    <p className="font-mono text-lg text-[#00FFC0] font-bold">~5 MIN</p>
+                                </div>
+                            </div>
+
+                            <Button onClick={() => navigate('/casinos/stake')} className="w-full shadow-[0_0_20px_rgba(0,255,192,0.15)] font-heading uppercase tracking-wider">
+                                INITIATE SESSION
+                            </Button>
                         </Card>
                     </div>
 
@@ -167,6 +217,7 @@ export const DashboardPage = () => {
                             FULL CONSOLE ACCESS
                         </Button>
                     </Card>
+
                 </div>
             </div>
         </div>
