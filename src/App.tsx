@@ -5,22 +5,22 @@ import { AuthProvider } from './auth/AuthContext';
 import { SoundProvider } from './context/SoundContext';
 import { ToastProvider } from './context/ToastContext';
 import { UIProvider } from './context/UIContext';
-import { GlobalStyles } from './components/GlobalStyles';
+import { GlobalStyles } from './components/common/GlobalStyles';
 
 const App: React.FC = () => (
   <React.StrictMode>
-    <AuthProvider>
-      <SoundProvider>
-        <UIProvider>
-          <ToastProvider>
-            <GlobalStyles />
-            <Router>
+    <Router>
+      <AuthProvider>
+        <SoundProvider>
+          <UIProvider>
+            <ToastProvider>
+              <GlobalStyles />
               <AppRoutes />
-            </Router>
-          </ToastProvider>
-        </UIProvider>
-      </SoundProvider>
-    </AuthProvider>
+            </ToastProvider>
+          </UIProvider>
+        </SoundProvider>
+      </AuthProvider>
+    </Router>
   </React.StrictMode>
 );
 

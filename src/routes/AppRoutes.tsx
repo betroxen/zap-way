@@ -42,14 +42,13 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
     return user ? <>{children}</> : <Navigate to="/" replace />;
 };
 
-
 export const AppRoutes: React.FC = () => (
   <Routes>
     <Route element={<MainLayout />}>
         {/* Public Routes */}
         <Route path="/" element={<HomePage />} />
         
-        {/* Static/Info pages */}
+        {/* Static/Info pages available to logged-in users */}
         <Route path="/about-us" element={<ProtectedRoute><AboutUsPage /></ProtectedRoute>} />
         <Route path="/affiliate" element={<ProtectedRoute><AffiliatePage /></ProtectedRoute>} />
         <Route path="/terms-of-service" element={<ProtectedRoute><TermsOfServicePage /></ProtectedRoute>} />
@@ -63,8 +62,7 @@ export const AppRoutes: React.FC = () => (
         <Route path="/support" element={<ProtectedRoute><SupportPage /></ProtectedRoute>} />
         <Route path="/knowledge-base" element={<ProtectedRoute><KnowledgeBasePage /></ProtectedRoute>} />
 
-
-        {/* Protected Routes */}
+        {/* Protected App Routes */}
         <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
         <Route path="/casinos" element={<ProtectedRoute><CasinoDirectoryPage /></ProtectedRoute>} />
         <Route path="/casinos/:id" element={<ProtectedRoute><CasinoDetailPage /></ProtectedRoute>} />
@@ -86,6 +84,7 @@ export const AppRoutes: React.FC = () => (
         <Route path="/strategy-sandbox/mines" element={<ProtectedRoute><MinesGamePage /></ProtectedRoute>} />
         <Route path="/strategy-sandbox/plinko" element={<ProtectedRoute><PlinkoGamePage /></ProtectedRoute>} />
         
+        {/* Fallback Route */}
         <Route path="*" element={<Navigate to="/" replace />} />
     </Route>
   </Routes>
